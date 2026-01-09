@@ -9,7 +9,9 @@ DISTFILES += qml/* \
     translations/*.ts \
     harbour-2048.desktop
 
-SAILFISHAPP_ICONS = 86x86 108x108 128x128 172x172
+# TODO: recreate the icon and make it available for all sizes
+#SAILFISHAPP_ICONS = 86x86 108x108 128x128 172x172
+SAILFISHAPP_ICONS = 86x86
 
 CONFIG += sailfishapp_i18n
 
