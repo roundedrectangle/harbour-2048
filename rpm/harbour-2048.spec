@@ -1,7 +1,7 @@
 Name:       harbour-2048
 
 Summary:    A clone of the popular 2048 app
-Version:    3.0
+Version:    3.0.1
 Release:    1
 License:    LICENSE
 BuildArch:  noarch
