@@ -1,6 +1,5 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
-import QtQuick.LocalStorage 2.0
 
 Item {
     property var label;
@@ -16,8 +15,7 @@ Item {
         opacity: 0.15;
         anchors.fill: parent;
     }
-    Column
-    {
+    Column {
         anchors.verticalCenter: parent.verticalCenter;
         anchors.fill: parent;
         Label {

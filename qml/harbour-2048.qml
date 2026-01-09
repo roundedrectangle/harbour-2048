@@ -1,61 +1,64 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
-import QtQuick.LocalStorage 2.0
-import "pages";
-import "cover";
-import "storage.js" as Storage;
+import Nemo.Configuration 1.0
+import "pages"
+import "cover"
 
 ApplicationWindow {
-    id: app;
-    cover: Component { CoverPage { } }
-    initialPage: Component { MainPage { } }
+    id: app
+    cover: Component { CoverPage {} }
+    initialPage: Component { MainPage {} }
 
-    Component.onCompleted: {
-        Storage.initialize();
+    readonly property var modeStrings: [qsTr("Classic"), qsTr("Adventure")]
+    readonly property var difficultyStrings: [qsTr("Easy"), qsTr("Normal"), qsTr("Hard")]
+    readonly property var tileFormatStrings: [qsTr("TetraTile"), qsTr("HexaTile")]
 
-        var size       = Storage.getLabel ("size");
-        var tileFormat = Storage.getLabel ("tileFormat");
-        var difficulty = Storage.getLabel ("difficulty");
-        var mode       = Storage.getLabel ("mode");
-        var score      = Storage.getLabel ("score");
+    ConfigurationGroup {
+        id: config
+        path: '/apps/harbour-2048'
 
-        if (size)       { app.size       = size; }
-        if (tileFormat) { app.tileFormat = tileFormat }
-        if (difficulty) { app.difficulty = difficulty; }
-        if (mode)       { app.mode       = mode; }
-        if (score)      { app.score      = score; }
+        property int size: 4
+        property int difficulty: 1 // Easy, Normal, Hard
+        property int mode: 0 // Classic, Adventure (Adventure not yet implemented)
+        property int tileFormat: 0 // TetraTile, HexaTile
 
-        var bestBestTile      = Storage.getLabel ("bestBestTile" + app.mode + app.difficulty + app.size);
-        var bestClassicScore  = Storage.getLabel ("bestClassicScore" + app.mode + app.difficulty + app.size);
-        var bestMoves         = Storage.getLabel ("bestMoves" + app.mode + app.difficulty + app.size);
-        var bestImprovedScore = Storage.getLabel ("bestImprovedScore" + app.mode + app.difficulty + app.size);
+        property int score
 
-        if (bestBestTile)      { app.bestBestTile      = bestBestTile; }
-        if (bestClassicScore)  { app.bestClassicScore  = bestClassicScore; }
-        if (bestMoves)         { app.bestMoves         = bestMoves; }
-        if (bestImprovedScore) { app.bestImprovedScore = bestImprovedScore; }
-        app.mode = "Classic";
+        function getContextDependantValue(prefix, defaultValue) {
+            return value(prefix + mode + difficulty + size, defaultValue)
+        }
+        function setContextDependantValue(prefix, value) {
+            setValue(prefix + mode + difficulty + size, value)
+        }
+
+        function getBestValue(type, defaultValue) {
+            return getContextDependantValue('best' + type, defaultValue)
+        }
+        function setBestValue(type, value) {
+            setContextDependantValue('best' + type, value)
+        }
     }
 
     Component.onDestruction: {
-        game.save();
-        Storage.setLabel ("size",       app.size);
-        Storage.setLabel ("tileFormat", app.tileFormat);
-        Storage.setLabel ("difficulty", app.difficulty);
-        Storage.setLabel ("mode",       app.mode);
-        Storage.setLabel ("score",      app.score);
+        game.save()
+        
+        config.size = app.size
+        config.tileFormat = app.tileFormat
+        config.difficulty = app.difficulty
+        config.mode = app.mode
+        config.score = app.score
     }
 
-    property int size           : 4;
-    property string difficulty  : "Normal";
-    property string mode        : "Classic";
-    property string tileFormat  : "TetraTile"
-    property int blizt          : 0;
-    property Item game          : null;
-    property int score          : 0;
+    property int size: config.size
+    property int difficulty: config.difficulty
+    property int mode: config.mode
+    property int tileFormat: config.tileFormat
+    property int blizt: 0
+    property Item game: null
+    property int score: config.score
 
-    property int bestBestTile      : 2;
-    property int bestClassicScore  : 0;
-    property int bestMoves         : 0;
-    property int bestImprovedScore : 0;
+    property int bestBestTile: config.getBestValue('BestTile', 2)
+    property int bestClassicScore: config.getBestValue('ClassicScore', 0)
+    property int bestMoves: config.getBestValue('Moves', 0)
+    property int bestImprovedScore: config.getBestValue('ImprovedScore', 0)
 }
