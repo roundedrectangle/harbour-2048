@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+X-Nemo-Application-Type=silica-qt5
+Icon=harbour-2048
+Exec=sailfish-qml harbour-2048
+Name=KibiTiles
+
+[X-Sailjail]
+OrganizationName=io.github.roundedrectangle
+ApplicationName=2048
+Permissions=
