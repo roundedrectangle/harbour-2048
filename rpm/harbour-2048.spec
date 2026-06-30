@@ -5,7 +5,7 @@ Version:    3.0.1
 Release:    1
 License:    LICENSE
 BuildArch:  noarch
-URL:        http://example.org/
+URL:        https://github.com/roundedrectangle/harbour-2048
 Source0:    %{name}-%{version}.tar.bz2
 Requires:   sailfishsilica-qt5 >= 0.10.9
 Requires:   libsailfishapp-launcher
