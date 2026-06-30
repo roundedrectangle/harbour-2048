@@ -6,6 +6,6 @@ Exec=sailfish-qml harbour-2048
 Name=KibiTiles
 
 [X-Sailjail]
-OrganizationName=io.github.roundedrectangle
-ApplicationName=KubiTiles
+OrganizationName=io.roundedrectangle
+ApplicationName=KibiTiles
 Permissions=
