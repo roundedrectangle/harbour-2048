@@ -5,8 +5,6 @@ GameBase {
     id: game
     swipeArea: swipeArea
 
-    design: Component { HexaTileDesign { } }
-
     //list the compound position for all direction
     property var leftVectors: Helper.getHexaVectors("left")
     property var rightVectors: Helper.getHexaVectors("right")

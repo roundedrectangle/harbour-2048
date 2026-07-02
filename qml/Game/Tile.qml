@@ -30,7 +30,7 @@ Item {
     property int guru: 0;
     property bool adept: false;
     property int virus: 0;
-    property Component design: Component { TileDesign { } }
+    property Component design
     property Component animation: Component { TileAnimation {} }
     property Component joker: Component {Joker {}}
     property Component brick: Component {Brick {}}

@@ -5,8 +5,6 @@ GameBase {
     id: game
     swipeArea: swipeArea
 
-    design: Component { TileDesign { } }
-
     //list the compound position for all direction
     property var leftVectors: Helper.getVectors("left")
     property var rightVectors: Helper.getVectors("right")
