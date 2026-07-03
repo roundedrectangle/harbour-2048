@@ -5,14 +5,13 @@ import '../js/tilehelper.js' as TileHelper
 
 Polygon {
     id: design
-    size: parent.width
+    width: parent.width
 
-    rotation: 30
     side: 6
+    canvas.rotation: 30
     color: Theme.rgba(Theme.highlightColor, TileHelper.getTileOpacity(parent.value))
 
     TileLabel {
         text: design.parent.value
-        rotation: -30
     }
 }

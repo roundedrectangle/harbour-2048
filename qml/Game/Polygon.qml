@@ -1,103 +1,67 @@
 import QtQuick 2.0
 
 Item {
-    id: polygon;
-    width: size;
-    height: size;
+    id: polygon
 
-    property int   size  : 400;
-    property int   side  : internal.minSide;
-    property color color : "green";
+    width: 400
+    height: width
 
-    readonly property alias border : borderProperty;
+    property int side: 4
+    property color color: 'green'
 
-    function containsPosition (posX, posY) {
-        for (var item, pos, idx = 0; (idx < repeatBack.count) && (item = repeatBack.itemAt (idx)) && (pos = mapToItem (item, posX, posY)); idx++) {
-            if (pos ["x"] >= 0 && pos ["x"] <= item ["width"] && pos ["y"] >= 0 && pos ["y"] <= item ["height"]) {
-                return true;
+    property alias canvas: canvas
+
+    property PolygonBorder border: PolygonBorder {
+        onWidthChanged: canvas.requestPaint()
+        onColorChanged: canvas.requestPaint()
+    }
+
+    onSideChanged: canvas.requestPaint()
+    onColorChanged: canvas.requestPaint()
+
+    Canvas {
+        id: canvas
+        anchors.fill: parent
+        antialiasing: true
+        renderTarget: Canvas.Image
+
+        readonly property int validSide: Math.max(side, 3)
+        readonly property real angleStep: 2 * Math.PI / validSide
+        readonly property real startAngle: (-Math.PI + angleStep) / 2
+
+        onPaint: {
+            var ctx = getContext('2d')
+            ctx.clearRect(0, 0, width, height)
+
+            var cx = width / 2,
+                cy = height / 2
+            var r = (Math.min(width, height) - border.width) / 2
+
+            ctx.beginPath()
+            for (var i = 0; i < validSide; ++i) {
+                var a = startAngle + i * angleStep
+                var x = cx + Math.cos(a) * r,
+                    y = cy + Math.sin(a) * r
+
+                if (i == 0) ctx.moveTo(x, y)
+                else ctx.lineTo(x, y)
             }
-        }
-        return false;
-    }
+            ctx.closePath()
 
-    QtObject {
-        id: borderProperty;
-        property int   width : 0;
-        property color color : "black";
-    }
+            ctx.fillStyle = color
+            ctx.fill()
 
-    QtObject {
-        id: internal;
-
-        readonly property int    minSide        : 4;
-        readonly property int    validCount     : side >= minSide ? side : minSide; // reset polygon square if wrong side is set
-        readonly property real   maskAngle      : 360 / validCount;
-        readonly property real   radAngle       : Math.PI / validCount;
-        readonly property real   rectWidth      : size * Math.sin (radAngle);
-        readonly property real   rectHeight     : size * Math.cos (radAngle) / 2;
-        readonly property bool   highQuality    : false;
-        readonly property string fragmentShader : "
-            varying %1 vec2      qt_TexCoord0;
-            uniform %1 float     qt_Opacity;
-            uniform %1 sampler2D mask;
-            void main (void) {
-               gl_FragColor = texture2D (mask, qt_TexCoord0) * qt_Opacity;
-            }".arg (highQuality ? "highp" : "lowp");
-
-        function opacify (col) {
-            return Qt.rgba (col.r, col.g, col.b, 1.0);
-        }
-    }
-    Item {
-        id: mask;
-        visible: false;
-        layer.enabled: true;
-        anchors.fill: parent;
-
-        Repeater {
-            id: repeaterContent;
-            model: internal.validCount;
-            delegate: Rectangle {
-                width: internal.rectWidth;
-                height: internal.rectHeight;
-                color: internal.opacify (polygon.color);
-                transformOrigin: Item.Bottom;
-                rotation: model.index * internal.maskAngle;
-                antialiasing: rotation % 90;
-                anchors.bottom: mask.verticalCenter;
-                anchors.horizontalCenter: mask.horizontalCenter;
+            if (border.width > 0) {
+                ctx.lineWidth = border.width
+                ctx.strokeStyle = border.color
+                ctx.stroke()
             }
         }
 
-        Repeater {
-            id: repeaterBorder;
-            model: internal.validCount;
-            delegate: Item {
-                width: internal.rectWidth;
-                height: internal.rectHeight;
-                transformOrigin: Item.Bottom;
-                rotation: model.index * internal.maskAngle;
-                anchors.bottom: mask.verticalCenter;
-                anchors.horizontalCenter: mask.horizontalCenter;
-
-                Rectangle {
-                    anchors {
-                        top: parent.top;
-                        left: parent.left;
-                        right: parent.right;
-                    }
-                    height: polygon.border.width;
-                    color: internal.opacify (polygon.border.color);
-                    antialiasing: parent.rotation % 90;
-                }
-            }
-        }
+        onWidthChanged: requestPaint()
+        onHeightChanged: requestPaint()
     }
-    ShaderEffect {
-        id: shader;
-        fragmentShader: internal.fragmentShader;
-        anchors.fill: parent;
 
-        readonly property alias mask : mask;
-    }
+    onSideChanged: canvas.requestPaint()
+    onColorChanged: canvas.requestPaint()
 }

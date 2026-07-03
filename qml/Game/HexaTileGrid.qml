@@ -24,9 +24,9 @@ Item {
                 Repeater {
                     model: size + (rowBack.columnIndex < size ? rowBack.columnIndex : size * 2 - 2 - rowBack.columnIndex)
                     delegate: Polygon {
-                        size: itemSize;
+                        width: itemSize;
                         side: 6;
-                        rotation : 30;
+                        canvas.rotation : 30;
                         color: "black";
                         opacity: 0.15;
                     }

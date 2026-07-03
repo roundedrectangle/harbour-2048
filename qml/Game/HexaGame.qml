@@ -17,12 +17,13 @@ GameBase {
         return Helper.mergeAvailable(leftVectors, tiles) || Helper.mergeAvailable(upLeftVectors, tiles) || Helper.mergeAvailable(upRightVectors, tiles)
     }
 
+    property alias background: background
     Polygon {
-        id: background;
-        color: "white";
-        opacity: 0.05;
-        side: 6;
-        size: parent.width;
+        id: background
+        anchors.fill: parent
+        side: 6
+        color: 'white'
+        opacity: 0.05
     }
 
     HexaSwipeArea {
