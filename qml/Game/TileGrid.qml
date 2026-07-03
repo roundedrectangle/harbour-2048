@@ -1,50 +1,27 @@
 import QtQuick 2.0
 
-Item {
-    id:tileGrid
+TileGridBase {
+    property real itemSize: (width + padding) / size - padding
+    property real itemRadius: itemSize * 0.05
 
-    property int size;
-    property int padding;
-
-    property real itemSize : (((width + padding) / size) - padding);
-
-    property var slots: [];
+    getSlot: repeater.itemAt
+    slotCount: repeater.count
 
     Grid {
-        id: back;
-        rows: size;
-        columns: size;
-        spacing: padding;
-        anchors.fill: slotsGrid;
+        anchors.fill: parent
+        rows: size
+        columns: size
+        spacing: padding
 
         Repeater {
-            model: size * size;
+            id: repeater
+            model: size * size
+            onModelChanged: slotsChanged()
             delegate: Rectangle {
-                color: "black";
-                radius: (width * 0.05);
-                width: itemSize;
-                height: itemSize;
-                opacity: 0.15;
-            }
-        }
-    }
-
-    Grid {
-        id: slotsGrid;
-        rows: size;
-        columns: size;
-        spacing: padding;
-        anchors.fill: parent;
-
-        Repeater {
-            model: size * size;
-            delegate: Rectangle {
-                id: tileSlot;
-                color: "transparent";
-                radius: (width * 0.05);
-                width: itemSize;
-                height: itemSize;
-                Component.onCompleted: { slots [model.index] = tileSlot; }
+                width: itemSize
+                height: itemSize
+                color: itemColor
+                radius: itemRadius
             }
         }
     }

@@ -7,7 +7,7 @@ Rectangle {
     anchors.fill: parent
 
     color: Theme.rgba(Theme.highlightColor, TileHelper.getTileOpacity(parent.value))
-    radius: parent.parent.radius
+    radius: Theme.paddingSmall
 
     TileLabel {
         text: design.parent.value

@@ -1,58 +1,37 @@
 import QtQuick 2.0
 
-Item {
-    id:tileGrid
+TileGridBase {
+    property real itemSize: Math.min(width, height) / repeater.count
+    itemColor: Qt.rgba(0, 0, 0, 0.15)
 
-    property int size;
-    property int padding;
-
-    property real itemSize : Math.min(width, height) / (2 * size - 1)
-
-    property var slots: [];
-
-
-    Column {
-        id: columnBack;
-        anchors.centerIn: parent;
-        Repeater {
-            model : size * 2 - 1;
-            delegate: Row {
-                id: rowBack;
-                anchors.horizontalCenter: parent.horizontalCenter;
-                property int columnIndex: model.index;
-                height: itemSize * 0.9
-                Repeater {
-                    model: size + (rowBack.columnIndex < size ? rowBack.columnIndex : size * 2 - 2 - rowBack.columnIndex)
-                    delegate: Polygon {
-                        width: itemSize;
-                        side: 6;
-                        canvas.rotation : 30;
-                        color: "black";
-                        opacity: 0.15;
-                    }
-                }
-            }
-        }
+    getSlot: function (i) {
+        var row = repeater.itemAt(Math.floor(i / repeater.count))
+        return row.repeater.itemAt(i % repeater.count)
     }
+    slotCount: 3*size*(size - 1) + 1
 
     Column {
-        id: columnSlot;
-        anchors.centerIn: parent;
+        anchors.centerIn: parent
         Repeater {
-            model : size * 2 - 1;
+            id: repeater
+            model: size * 2 - 1
+            onModelChanged: slotsChanged()
             delegate: Row {
-                id: rowSlot;
-                anchors.horizontalCenter: parent.horizontalCenter;
-                property int columnIndex: model.index;
-                height: itemSize * 0.9;
+                id: row
+                anchors.horizontalCenter: parent.horizontalCenter
+                height: itemSize * 0.9
+
+                property int columnIndex: model.index
+                property alias repeater: rowRepeater
+
                 Repeater {
-                    model: size + (rowSlot.columnIndex < size ? rowSlot.columnIndex : size * 2 - 2 - rowSlot.columnIndex)
-                    delegate: Rectangle {
-                        id: tileSlot;
-                        width: itemSize;
-                        height: width;
-                        color: "transparent"
-                        Component.onCompleted: { slots [rowSlot.columnIndex * (2 * tileGrid.size - 1) + model.index] = tileSlot;}
+                    id: rowRepeater
+                    model: size + (row.columnIndex < size ? row.columnIndex : size * 2 - 2 - row.columnIndex)
+                    delegate: Polygon {
+                        width: itemSize
+                        side: 6
+                        canvas.rotation: 30
+                        color: itemColor
                     }
                 }
             }

@@ -23,7 +23,6 @@ Item {
         id: canvas
         anchors.fill: parent
         antialiasing: true
-        renderTarget: Canvas.Image
 
         readonly property int validSide: Math.max(side, 3)
         readonly property real angleStep: 2 * Math.PI / validSide
@@ -62,6 +61,11 @@ Item {
         onHeightChanged: requestPaint()
     }
 
-    onSideChanged: canvas.requestPaint()
-    onColorChanged: canvas.requestPaint()
+    // Without this, when closing the app, Canvas is cleared
+    Connections {
+        target: Qt.application
+        onStateChanged:
+            if (Qt.application.state === Qt.ApplicationActive)
+                canvas.requestPaint()
+    }
 }

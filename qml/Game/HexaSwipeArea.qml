@@ -1,94 +1,51 @@
 import QtQuick 2.0
 
-MouseArea {
-    signal moveLeft;
-    signal moveRight;
-    signal moveUpLeft;
-    signal moveUpRight;
-    signal moveDownLeft;
-    signal moveDownRight;
+SwipeAreaBase {
+    signal moveUpLeft
+    signal moveUpRight
+    signal moveDownLeft
+    signal moveDownRight
 
-    property int threshold: 40;
-    property bool repeat: false;
-    property bool pressed: false;
-    property int lastX;
-    property int lastY;
-    onPressed: {
-        pressed = true;
-        lastX = mouse.x;
-        lastY = mouse.y;
-    }
-    onReleased: {
-        pressed = false;
-    }
-    onMouseXChanged: {
-        if (pressed) {
-            xyChanged(mouse);
-        }
-    }
-    onMouseYChanged: {
-        if (pressed) {
-            xyChanged(mouse);
-        }
-    }
-    function xyChanged(mouse) {
-        var xMove = lastX - mouse.x;
-        var yMove = lastY - mouse.y;
-        var rapport = xMove / yMove;
-        var flag = false;
-        if (Math.abs(rapport) > 1.73) {
-            if (xMove < -threshold && pressed) {
-                moveRight();
-                flag = true;
+    onPositionChanged: {
+        if (!isPressed) return
+
+        var xMove = lastX - mouse.x
+        var yMove = lastY - mouse.y
+        var rapport = xMove / yMove
+        var moved = false
+
+        if (Math.abs(rapport) > 1.73)
+            moved = handleXMoved(xMove)
+        else if (xMove < 0) {
+            if (yMove < -threshold && isPressed) {
+                moveDownRight();
+                moved = true;
                 if (!repeat) {
-                    pressed = false;
+                    isPressed = false;
                 }
             }
-            if (xMove > threshold && pressed) {
-                moveLeft();
-                flag = true;
+            if (yMove > threshold && isPressed) {
+                moveUpRight();
+                moved = true;
                 if (!repeat) {
-                    pressed = false;
+                    isPressed = false;
                 }
             }
-        }
-        else {
-            if ( xMove < 0) {
-                if (yMove < -threshold && pressed) {
-                    moveDownRight();
-                    flag = true;
-                    if (!repeat) {
-                        pressed = false;
-                    }
-                }
-                if (yMove > threshold && pressed) {
-                    moveUpRight();
-                    flag = true;
-                    if (!repeat) {
-                        pressed = false;
-                    }
-                }
+        } else {
+            if (yMove < -threshold && isPressed) {
+                moveDownLeft()
+                moved = true
+                if (!repeat)
+                    isPressed = false
             }
-            else {
-                if (yMove < -threshold && pressed) {
-                    moveDownLeft();
-                    flag = true;
-                    if (!repeat) {
-                        pressed = false;
-                    }
-                }
-                if (yMove > threshold && pressed) {
-                    moveUpLeft();
-                    flag = true;
-                    if (!repeat) {
-                        pressed = false;
-                    }
-                }
+            if (yMove > threshold && isPressed) {
+                moveUpLeft()
+                moved = true
+                if (!repeat)
+                    isPressed = false
             }
         }
-        if (flag) {
-            lastX = mouse.x;
-            lastY = mouse.y;
-        }
+
+        if (moved) updateLastPos()
     }
 }

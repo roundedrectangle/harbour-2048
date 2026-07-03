@@ -3,6 +3,10 @@ TARGET = harbour-2048
 CONFIG += sailfishapp_qml
 
 DISTFILES += qml/* \
+    qml/Game/PolygonBorder.qml \
+    qml/Game/SwipeAreaBase.qml \
+    qml/Game/TileGridBase.qml \
+    qml/Game/mathutils.js \
     rpm/harbour-2048.changes.in \
     rpm/harbour-2048.changes.run.in \
     rpm/harbour-2048.spec \
@@ -16,3 +20,8 @@ SAILFISHAPP_ICONS = 86x86
 CONFIG += sailfishapp_i18n
 
 TRANSLATIONS += translations/harbour-2048-ru.ts
+
+migration.files = migrate.py
+migration.path = /usr/share/$${TARGET}
+
+INSTALLS += migration

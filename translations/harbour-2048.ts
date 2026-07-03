@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>ChangeMode</name>
+    <name>ChangeModePage</name>
     <message>
         <source>Change Mode</source>
         <translation type="unfinished"></translation>
@@ -30,6 +30,29 @@
     </message>
 </context>
 <context>
+    <name>Lose</name>
+    <message>
+        <source>No moves available</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Best tile</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Classic score</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Improved score</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Moves</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>MainPage</name>
     <message>
         <source>Change Mode</source>
@@ -52,16 +75,20 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Mode: %1 %2 %3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>BEST</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>IMPSCORE</source>
         <comment>short for improved score</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 difficulty, %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1x%1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

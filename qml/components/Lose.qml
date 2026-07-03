@@ -23,19 +23,19 @@ Rectangle {
 
         DetailItem {
             label: qsTr("Best tile")
-            value: game.bestTile
+            value: gameConfig.bestTile
         }
         DetailItem {
             label: qsTr("Classic score")
-            value: game.classicScore
+            value: gameConfig.classicScore
         }
         DetailItem {
             label: qsTr("Improved score")
-            value: game.improvedScore
+            value: gameConfig.improvedScore
         }
         DetailItem {
             label: qsTr("Moves")
-            value: game.moves
+            value: gameConfig.moves
         }
     }
 

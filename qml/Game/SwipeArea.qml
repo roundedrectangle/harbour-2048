@@ -1,77 +1,35 @@
 import QtQuick 2.0
 
-MouseArea {
-    signal moveLeft;
-    signal moveRight;
-    signal moveUp;
-    signal moveDown;
+SwipeAreaBase {
+    signal moveUp
+    signal moveDown
 
-    property int threshold: 40;
-    property bool repeat: false;
-    property bool pressed: false;
-    property int lastX;
-    property int lastY;
-    onPressed: {
-        pressed = true;
-        lastX = mouse.x;
-        lastY = mouse.y;
-    }
-    onReleased: {
-        pressed = false;
-    }
-    onMouseXChanged: {
-        if (pressed) {
-            xyChanged(mouse);
-        }
-    }
-    onMouseYChanged: {
-        if (pressed) {
-            xyChanged(mouse);
-        }
-    }
-    function xyChanged(mouse) {
+    onPositionChanged: {
+        if (!isPressed) return
+
         var xMove = lastX - mouse.x
         var yMove = lastY - mouse.y
-        var flag = false;
-        if (Math.abs(xMove) > Math.abs(yMove)) {
-            while (xMove < -threshold && pressed) {
-                moveRight();
-                xMove += threshold;
-                flag = true;
-                if (!repeat) {
-                    pressed = false;
-                }
-            }
-            while (xMove > threshold && pressed) {
-                moveLeft();
-                xMove -= threshold;
-                flag = true;
-                if (!repeat) {
-                    pressed = false;
-                }
-            }
-        }
+        var moved = false
+
+        if (Math.abs(xMove) > Math.abs(yMove))
+            moved = handleXMoved(xMove)
         else {
-            while (yMove < -threshold && pressed) {
-                moveDown();
-                yMove += threshold;
-                flag = true;
-                if (!repeat) {
-                    pressed = false;
-                }
+            while (yMove < -threshold && isPressed) {
+                moveDown()
+                yMove += threshold
+                moved = true
+                if (!repeat)
+                    isPressed = false
             }
-            while (yMove > threshold && pressed) {
-                moveUp();
-                yMove -= threshold;
-                flag = true;
-                if (!repeat) {
-                    pressed = false;
-                }
+            while (yMove > threshold && isPressed) {
+                moveUp()
+                yMove -= threshold
+                moved = true
+                if (!repeat)
+                    isPressed = false
             }
         }
-        if (flag) {
-            lastX = mouse.x;
-            lastY = mouse.y;
-        }
+
+        if (moved) updateLastPos()
     }
 }

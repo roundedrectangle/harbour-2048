@@ -3,63 +3,36 @@ import "helper.js" as Helper
 
 GameBase {
     id: game
-    swipeArea: swipeArea
 
     //list the compound position for all direction
-    property var leftVectors: Helper.getVectors("left")
-    property var rightVectors: Helper.getVectors("right")
-    property var upVectors: Helper.getVectors("up")
-    property var downVectors: Helper.getVectors("down")
+    readonly property var leftVectors: Helper.getVectors(size, Helper.vectorFactories.left)
+    readonly property var rightVectors: Helper.getVectors(size, Helper.vectorFactories.right)
+    readonly property var upVectors: Helper.getVectors(size, Helper.vectorFactories.top)
+    readonly property var downVectors: Helper.getVectors(size, Helper.vectorFactories.bottom)
 
-    moveDoMergeAvailable: function() {
+    checkMergeAvailable: function() {
         return Helper.mergeAvailable(leftVectors, tiles) || Helper.mergeAvailable(upVectors, tiles)
     }
 
+    property alias background: background
     Rectangle {
-        id: background;
-        color: "white";
-        opacity: 0.05;
-        radius: width / 50;
-        anchors.fill: parent;
+        id: background
+        anchors.fill: parent
+        radius: width / 50
+        color: 'white'
+        opacity: 0.05
     }
 
     SwipeArea {
-        id: swipeArea;
-        repeat: false;
-        anchors.fill: parent;
-        onMoveLeft:  { move (leftVectors);  moves++;}
-        onMoveRight: { move (rightVectors); moves++;}
-        onMoveUp:    { move (upVectors);    moves++;}
-        onMoveDown:  { move (downVectors);  moves++;}
+        id: swipeArea
+        anchors.fill: parent
+        onMoveLeft: move(leftVectors)
+        onMoveRight: move(rightVectors)
+        onMoveUp: move(upVectors)
+        onMoveDown: move(downVectors)
     }
+    swipeArea: swipeArea
 
-    TileGrid {
-        size: parent.size;
-        padding: parent.padding;
-        anchors {
-            fill: parent;
-            margins: padding;
-        }
-
-        // TODO: the following is not any different from HexaGame, need to move this to GameBase
-        Component.onCompleted: {
-            game.slots = slots;
-            if (initState !== undefined) {
-                for (var i in initState) {
-                    var value = parseInt (initState [i]);
-                    var slot = slots [i];
-                    if (value !== 0) {
-                        tiles [i] = componentTile.createObject (slot, { "value" : value });
-                        if (value > bestTile) {
-                            bestTile = value;
-                        }
-                    }
-                }
-            }
-            else {
-                tiles [size * size - 1] = undefined;
-                addTiles(2);
-            }
-        }
-    }
+    TileGrid { id: tileGrid }
+    tileGrid: tileGrid
 }

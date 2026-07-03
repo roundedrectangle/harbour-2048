@@ -1,27 +1,23 @@
 import QtQuick 2.0
+import 'mathutils.js' as MathUtils
 import "helper.js" as Helper
 import "gameMode.js" as Mode
 
 Item {
     id: game
 
-    property var swipeArea
+    property alias tileComponent: tileComponent
 
-    property alias componentTile: componentTile
+    property bool loaded
+    property bool fresh: true
 
-    property int size         : 3;  // size of the board; for tetra => number of vertical slot and horizontal slot
+    property int size: 3 // size of the board; for tetra => number of vertical slot and horizontal slot
 
-    property int bestTile      : 0;  // best current board tile
-    property int classicScore  : 0;
-    property int moves         : 0;
-    property int improvedScore : 0;
+    // state (array of tiles), bestTile (best current board tile), classicScore, moves, improvedScore
+    property var gameConfig
 
-    property var improvedScoreTable: {2:1, 4:2, 8:3, 16:4, 32:5, 64:6, 128:7, 256:8, 512:9, 1024:10, 2048:11, 4096:12, 8192:13, 16384:14, 32768:15}
-
-    property var initState : undefined; // state of the board at the start of the game
-    property var slots     : [];        // tile slot list, for tetra count = size * size
-    property var tiles     : [];         // tile list
-    property var tilesCount: ({});  // count how many of each tiles we added;
+    property var tiles: [] // tile list
+    property var tilesCount: ({}) // count how many of each tiles we added
 
     property var modes: {
         0: { // Classic
@@ -37,9 +33,12 @@ Item {
     }
     property var mode: modes[0][1] // behavior when adding tile to the board
 
-    property int padding          : (width * 0.02);
+    property SwipeAreaBase swipeArea
+    property TileGridBase tileGrid
+
+    property int padding: width * 0.02
     property Component design
-    property Component animation  : Component { TileAnimation {} }
+    property Component animation: Component { TileAnimation {} }
     property alias loseDesign: loseLoader.sourceComponent
 
     Loader {
@@ -49,81 +48,140 @@ Item {
         active: !swipeArea.enabled
     }
 
-    signal lose
-    signal restart
-    signal save
+    function checkLost() {
+        var freeSpace = Helper.getFreeSpace(tiles, tileGrid)
+        console.debug("freeSpace", freeSpace)
+        if (!freeSpace.length && !checkMergeAvailable())
+            lose()
+    }
 
-    onLose:
-        swipeArea.enabled = false
+    function loadFromState() {
+        console.log("Loading from state")
+        fresh = true
+        for (var i in gameConfig.state) {
+            var value = gameConfig.state[i]
+            if (value) {
+                tiles[i] = tileComponent.createObject(tileGrid.getSlot(i), {value: value})
+                gameConfig.bestTile = Math.max(gameConfig.bestTile, value)
+            }
+        }
 
-    onRestart: {
+        checkLost()
+    }
+
+    function destroyAllTiles() {
+        console.log("Destroying all")
+        for (var i in tiles) {
+            var tile = tiles[i]
+            if (tile) {
+                tile.destroy()
+                tiles[i] = undefined
+            }
+        }
+    }
+
+    Component.onCompleted: {
+        if (gameConfig.state && gameConfig.state.length)
+            loadFromState()
+        else {
+            tiles[size * size - 1] = undefined
+            addTiles(2)
+        }
+        loaded = true
+    }
+
+    function reload() {
+        if (!loaded) return
+
+        console.log("Reloading")
         swipeArea.enabled = true
+        destroyAllTiles()
+        tiles = []
+        if (gameConfig.state && gameConfig.state.length)
+            loadFromState()
+        else {
+            tiles[size * size - 1] = undefined
+            loadNewGame()
+        }
+    }
+
+    function lose() {
+        swipeArea.enabled = false
+    }
+
+    function loadNewGame() {
+        console.log("Loading a new game")
+        fresh = true
+        gameConfig.bestTile = gameConfig.classicScore = gameConfig.moves = gameConfig.improvedScore = 0
+        addTiles(2)
         for (var i in tiles) {
-            var tile = tiles[i];
-            if (tile !== undefined) {
-                tile.destroy();
-                tiles[i] = undefined;
-            }
-        }
-        bestTile = 0;
-        classicScore = 0;
-        moves = 0;
-        improvedScore = 0;
-        addTiles(2);
-        for (var i in tiles) {
-            var tile = tiles[i];
-            if (tile !== undefined && tile.value > bestTile) {
-                bestTile = tile.value;
-            }
+            var tile = tiles[i]
+            if (tile)
+                gameConfig.bestTile = Math.max(gameConfig.bestTile, tile.value)
         }
     }
 
-    onSave: {
-        initState = [];
-        for (var i = 0; i < tiles.length; i++) {
-            var tile = tiles [i];
-            if (tile !== undefined && tile !== null) {
-                initState.push (tile.value);
+    function restart() {
+        console.log("Restarting")
+        swipeArea.enabled = true
+        destroyAllTiles()
+        loadNewGame()
+    }
+
+    onModeChanged: reload()
+    // when sizeChanged is emitted in GameBase, slots in tile grid aren't updated yet
+    //onSizeChanged: reload()
+    Connections {
+        target: tileGrid
+        onSlotsChanged: reload()
+    }
+    Connections {
+        target: gameConfig
+        onStateChanged:
+            // This is used when migrating
+            if (fresh) {
+                console.log("State changed for a fresh game, reloading")
+                reload()
             }
-            else {
-                initState.push (0);
-            }
+    }
+
+    function save() {
+        console.log("Save")
+        var tilesState = []
+        for (var i=0; i < tiles.length; i++) {
+            var tile = tiles[i]
+            tilesState.push(tile && tile.value ? tile.value : 0)
         }
+        gameConfig.state = tilesState
+    }
+    Component.onDestruction: save()
+
+    function addTiles(number) {
+        mode(number, tiles, tileGrid, size, tileComponent, tilesCount)
     }
 
-    function addTiles (number) {
-        mode(number, tiles, slots, size, componentTile, tilesCount)
-    }
-
-    property var moveDoMergeAvailable
+    property var checkMergeAvailable
 
     function move(vectors) {
-        var moved = Helper.dealWithVectors(vectors, tiles);
-        if (moved) { addTiles(1); }
-        else {
-            var freeSpace = Helper.getFreeSpace(tiles, slots);
-            console.debug("freeSpace", freeSpace)
-            if (freeSpace.length === 0) {
-                console.debug("no space available");
-                var mergeAvailable = moveDoMergeAvailable()
-                if (!mergeAvailable) { lose(); }
-            }
-        }
+        fresh = false
+        var moved = Helper.dealWithVectors(size, tileGrid, vectors, tiles)
+        if (moved) {
+            addTiles(1)
+            gameConfig.moves++
+        } else
+            checkLost()
     }
 
     Component {
-        id: componentTile;
+        id: tileComponent
 
         Tile {
-            design: game.design;
-            animation: game.animation;
+            design: game.design
+            animation: game.animation
             onHasMerged: {
-                classicScore += value;
-                improvedScore += improvedScoreTable[value];
-                console.debug(improvedScore)
-                if (value > bestTile) {
-                    bestTile = value;
-                }
+                gameConfig.classicScore += value
+                gameConfig.improvedScore += value > 1 ? MathUtils.log2(value) - 1 : 0
+                gameConfig.bestTile = Math.max(gameConfig.bestTile, value)
             }
         }
     }

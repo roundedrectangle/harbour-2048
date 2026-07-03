@@ -1,66 +1,73 @@
-
-function getVectors(direction) {
+function getVectors(size, getIndex) {
     var vectors = []
     for (var i = 0; i < size; i++) {
         var vector = []
-        for (var j = 0; j < size; j++) {
-            if (direction === "left") {
-                vector[j] = i * size + j;
-            }
-            else if (direction === "right") {
-                vector[j] = (i + 1) * size - j - 1;
-            }
-            else if (direction === "up") {
-                vector[j] = j * size + i;
-            }
-            else if (direction === "down") {
-                vector[j] = (size - j - 1) * size + i;
-            }
-        }
-        vectors[i] = vector;
+        for (var j = 0; j < size; j++)
+            vector.push(getIndex(i, j, size))
+        vectors.push(vector)
     }
-    return vectors;
+    return vectors
 }
 
-function getHexaVectors(direction) {
-    var vectors    = []
-    var maxLength  = 2 * size - 1;
-    var doubleSize = maxLength + 1;
+var vectorFactories = {
+    left: function(i, j, size) { return i*size + j },
+    right: function(i, j, size) { return (i + 1) * size - j - 1 },
+    top: function(i, j, size) { return j * size + i },
+    bottom: function(i, j, size) { return (size - j - 1) * size + i }
+}
+
+function getHexaVectors(size, getIndex, reverse) {
+    var vectors = []
+    var maxLength = 2 * size - 1
+    var doubleSize = maxLength + 1
+
     for (var i = 0; i < maxLength; i++) {
-        var vector = [];
-        var sizeI = i < size;
-        var lineLength = size + (sizeI ? i : doubleSize - 2 - i);
-        for (var j = 0; j < lineLength; j++) {
-            if (direction === "left") {
-                vector[j] = i * maxLength + j
-            }
-            else if (direction === "right") {
-                vector[j] = i * maxLength + lineLength - j - 1;
-            }
-            else if (direction === "uleft" || direction === "dright") {
-                var first       = sizeI ? size - 1 - i : (i - size + 1) * maxLength;
-                var variation   = j * doubleSize;
-                var adjustement = sizeI && j >= size ? j - size + 1 : (!sizeI && j + i + 1 >= doubleSize ? j + i - doubleSize + 2 : 0);
-                vector[j] = first + variation - adjustement;
-            }
-            else if (direction === "uright" || direction === "dleft") {
-                var first       = sizeI ? i : size - 1 + (i - size + 1) * doubleSize;
-                var variation   = j * maxLength;
-                var adjustement = sizeI && j >= size ? j - size + 1 : (!sizeI && j + i + 1 >= doubleSize ? j + i - doubleSize + 2 : 0);
-                vector[j] = first + variation - adjustement;
-            }
-        }
-        if (direction === "dleft" || direction === "dright") {
-            vectors[i] = vector.reverse();
-        }
-        else {
-            vectors[i] = vector;
-        }
+        var vector = []
+        var isTop = i < size // is top half
+        var lineLength = size + (isTop ? i : doubleSize - 2 - i)
+
+        var first, variation, adjustement
+
+        for (var j = 0; j < lineLength; j++)
+            vector.push(getIndex(i, j, {size: size, maxLength: maxLength, doubleSize: doubleSize, isTop: isTop, lineLength: lineLength}))
+
+        vectors.push(reverse ? vector.reverse() : vector)
     }
-    return vectors;
+    return vectors
 }
 
-function dealWithVectors (vectors, tiles) {
+function getLeftHexaVectors(size) {
+    return getHexaVectors(size, function(i, j, data) { return i * data.maxLength + j })
+}
+function getRightHexaVectors(size) {
+    return getHexaVectors(size, function(i, j, data) { return i * data.maxLength + data.lineLength - j - 1 })
+}
+
+function getHexaVAdjustment(i, j, data) {
+    var size = data.size, isTop = data.isTop, doubleSize = data.doubleSize
+    return isTop && j >= size ? j - size + 1 : (!isTop && j + i + 1 >= doubleSize ? j + i - doubleSize + 2 : 0)
+}
+
+function upLeftHexaVectorsFactory(i, j, data) {
+    var first = data.isTop ? data.size - 1 - i : (i - data.size + 1) * data.maxLength
+    var variation = j * data.doubleSize
+    return first + variation - getHexaVAdjustment(i, j, data)
+}
+
+function getUpLeftHexaVectors(size) { return getHexaVectors(size, upLeftHexaVectorsFactory) }
+function getDownRightHexaVectors(size) { return getHexaVectors(size, upLeftHexaVectorsFactory, true) }
+
+function upRightHexaVectorsFactory(i, j, data) {
+    var first = data.isTop ? i : data.size - 1 + (i - data.size + 1) * data.doubleSize
+    var variation = j * data.maxLength
+    return first + variation - getHexaVAdjustment(i, j, data)
+}
+
+function getUpRightHexaVectors(size) { return getHexaVectors(size, upRightHexaVectorsFactory) }
+function getDownLeftHexaVectors(size) { return getHexaVectors(size, upRightHexaVectorsFactory, true) }
+
+
+function dealWithVectors(size, tileGrid, vectors, tiles) {
     var moved = false;
     var bombs = [];
     for (var i in vectors) {
@@ -94,7 +101,7 @@ function dealWithVectors (vectors, tiles) {
             if (lastTile !== undefined && lastTile.value > 1 && (lastTile.value === tile.value || tile.value === 1 )) {
                 //console.debug("merge", oldIndex);
                 tiles[oldIndex] = undefined;
-                tile.moveTo (slots[lastTileIndex], lastTile)
+                tile.moveTo (tileGrid.getSlot(lastTileIndex), lastTile)
                 moved = true;
                 merged++;
                 lastTile = undefined;
@@ -106,7 +113,7 @@ function dealWithVectors (vectors, tiles) {
                 }
                 else if (oldIndex !== newIndex) {
                     //console.debug("move", oldIndex, "to", newIndex);
-                    tile.moveTo (slots[newIndex])
+                    tile.moveTo (tileGrid.getSlot(newIndex))
                     moved = true;
                     tiles[newIndex] = tile;
                     tiles[oldIndex] = undefined;
@@ -141,32 +148,27 @@ function dealWithVectors (vectors, tiles) {
     return moved;
 }
 
-function getFreeSpace (tiles, slots) {
-    var freeSpace = [];
-    for (var i = 0; i < slots.length; i++) {
-        var tile = tiles[i];
-        var slot = slots[i];
-        if (slot !== undefined && tile === undefined) {
+function getFreeSpace(tiles, tileGrid) {
+    var freeSpace = []
+    for (var i = 0; i < tileGrid.slotCount; i++)
+        if (tileGrid.getSlot(i) && !tiles[i])
             freeSpace.push(i)
-        }
-    }
-    return freeSpace;
+    return freeSpace
 }
 
 function mergeAvailable(vectors, tiles) {
     for (var i in vectors) {
-        var lastTileNumber = undefined;
+        var lastTileNumber
         var vector = vectors[i];
         for (var j in vector) {
-            var index = vector[j];
-            var tile = tiles[index];
-            if (lastTileNumber !== undefined && lastTileNumber === tile.value) {
-                return true;
-            }
-            else {
-                lastTileNumber = tile.value;
-            }
+            var tile = tiles[vector[j]]
+            if (!tile)
+                continue
+            if (lastTileNumber && lastTileNumber === tile.value)
+                return true
+            else
+                lastTileNumber = tile.value
         }
     }
-    return false;
+    return false
 }

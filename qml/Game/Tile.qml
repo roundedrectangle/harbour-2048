@@ -7,7 +7,7 @@ Item {
     scale: 0.65;
     Component.onCompleted: {
         if (value > 1) {
-            design.createObject(tile);
+            design.createObject(tile)
         } else if (value === 1) {
             joker.createObject(tile);
         } else if (value === -10) {

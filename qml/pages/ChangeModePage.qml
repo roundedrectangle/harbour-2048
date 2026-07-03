@@ -5,6 +5,8 @@ import ".."
 Page {
     id: page
 
+    property Item game
+
     Column {
         spacing: 10
         anchors.fill: parent
@@ -15,10 +17,10 @@ Page {
 
         ComboBox {
             label: qsTr("Difficulty")
-            currentIndex: app.difficulty
+            currentIndex: config.difficulty
             onCurrentIndexChanged: {
-                app.game.save()
-                app.difficulty = currentIndex
+                game.save()
+                config.difficulty = currentIndex
             }
             menu: ContextMenu {
                 Repeater {
@@ -30,10 +32,10 @@ Page {
 
         /*ComboBox {
             label: qsTr("Mode")
-            currentIndex: app.mode
+            currentIndex: config.mode
             onCurrentIndexChanged: {
-                app.game.save()
-                app.mode = currentIndex
+                game.save()
+                config.mode = currentIndex
             }
             menu: ContextMenu {
                 Repeater {
@@ -45,10 +47,10 @@ Page {
 
         ComboBox {
             label: qsTr("Format")
-            currentIndex: app.tileFormat
+            currentIndex: config.tileFormat
             onCurrentIndexChanged: {
-                app.game.save()
-                app.tileFormat = currentIndex
+                game.save()
+                config.tileFormat = currentIndex
             }
             menu: ContextMenu {
                 Repeater {
@@ -60,10 +62,10 @@ Page {
 
         ComboBox {
             label: qsTr("Size")
-            currentIndex: app.size - 2
+            currentIndex: config.size - 2
             onCurrentIndexChanged: {
-                app.game.save()
-                app.size = currentIndex + 2
+                game.save()
+                config.size = currentIndex + 2
             }
             menu: ContextMenu {
                 Repeater {

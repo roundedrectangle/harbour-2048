@@ -2,79 +2,112 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="ru">
 <context>
-    <name>ChangeMode</name>
+    <name>ChangeModePage</name>
     <message>
-        <location filename="../qml/pages/ChangeMode.qml" line="13"/>
+        <location filename="../qml/pages/ChangeModePage.qml" line="15"/>
         <source>Change Mode</source>
-        <translation>Сменить режим</translation>
+        <translation type="unfinished">Сменить режим</translation>
     </message>
     <message>
-        <location filename="../qml/pages/ChangeMode.qml" line="17"/>
+        <location filename="../qml/pages/ChangeModePage.qml" line="19"/>
         <source>Difficulty</source>
-        <translation>Сложность</translation>
+        <translation type="unfinished">Сложность</translation>
     </message>
     <message>
-        <location filename="../qml/pages/ChangeMode.qml" line="47"/>
+        <location filename="../qml/pages/ChangeModePage.qml" line="49"/>
         <source>Format</source>
-        <translation>Формат</translation>
+        <translation type="unfinished">Формат</translation>
     </message>
     <message>
-        <location filename="../qml/pages/ChangeMode.qml" line="62"/>
+        <location filename="../qml/pages/ChangeModePage.qml" line="64"/>
         <source>Size</source>
-        <translation>Размер</translation>
+        <translation type="unfinished">Размер</translation>
     </message>
     <message>
-        <location filename="../qml/pages/ChangeMode.qml" line="78"/>
+        <location filename="../qml/pages/ChangeModePage.qml" line="80"/>
         <source>Reset</source>
-        <translation>Сбросить</translation>
+        <translation type="unfinished">Сбросить</translation>
     </message>
     <message>
-        <location filename="../qml/pages/ChangeMode.qml" line="81"/>
+        <location filename="../qml/pages/ChangeModePage.qml" line="83"/>
         <source>Data reset</source>
         <comment>past tense</comment>
-        <translation>Данные сброшены</translation>
+        <translation type="unfinished">Данные сброшены</translation>
+    </message>
+</context>
+<context>
+    <name>Lose</name>
+    <message>
+        <location filename="../qml/components/Lose.qml" line="19"/>
+        <source>No moves available</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/components/Lose.qml" line="25"/>
+        <source>Best tile</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/components/Lose.qml" line="29"/>
+        <source>Classic score</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/components/Lose.qml" line="33"/>
+        <source>Improved score</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/components/Lose.qml" line="37"/>
+        <source>Moves</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>MainPage</name>
     <message>
-        <location filename="../qml/pages/MainPage.qml" line="65"/>
+        <location filename="../qml/pages/MainPage.qml" line="20"/>
         <source>Change Mode</source>
         <translation>Сменить режим</translation>
     </message>
     <message>
-        <location filename="../qml/pages/MainPage.qml" line="69"/>
+        <location filename="../qml/pages/MainPage.qml" line="24"/>
         <source>Restart game</source>
         <translation>Перезапустить игру</translation>
     </message>
     <message>
-        <location filename="../qml/pages/MainPage.qml" line="83"/>
-        <source>Mode: %1 %2 %3</source>
-        <translation>Режим: %1 %2 %3</translation>
+        <location filename="../qml/pages/MainPage.qml" line="34"/>
+        <source>%1 difficulty, %2</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/MainPage.qml" line="92"/>
+        <location filename="../qml/pages/MainPage.qml" line="36"/>
+        <source>%1x%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/MainPage.qml" line="45"/>
         <source>SCORE</source>
         <translation>СЧЁТ</translation>
     </message>
     <message>
-        <location filename="../qml/pages/MainPage.qml" line="93"/>
+        <location filename="../qml/pages/MainPage.qml" line="46"/>
         <source>TILE</source>
         <translation>ПЛИТКА</translation>
     </message>
     <message>
-        <location filename="../qml/pages/MainPage.qml" line="94"/>
+        <location filename="../qml/pages/MainPage.qml" line="47"/>
         <source>MOVES</source>
         <translation>ХОДЫ</translation>
     </message>
     <message>
-        <location filename="../qml/pages/MainPage.qml" line="95"/>
+        <location filename="../qml/pages/MainPage.qml" line="48"/>
         <source>IMPSCORE</source>
         <comment>short for improved score</comment>
         <translation>УЛУЧШСЧЁТ</translation>
     </message>
     <message>
-        <location filename="../qml/pages/MainPage.qml" line="121"/>
+        <location filename="../qml/pages/MainPage.qml" line="87"/>
         <source>BEST</source>
         <translation>ЛУЧШЕЕ</translation>
     </message>
