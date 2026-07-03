@@ -189,6 +189,7 @@ Page {
 
         Game {
             design: Component { SailTileDesign {} }
+            loseDesign: Component { Lose {} }
             mode: modes[app.mode][app.difficulty]
             anchors {
                 fill: parent;
@@ -208,6 +209,7 @@ Page {
 
         HexaGame {
             design: Component { SailHexaDesign {} }
+            loseDesign: Component { Lose {} }
             mode: modes[app.mode][app.difficulty]
             anchors {
                 fill: parent;

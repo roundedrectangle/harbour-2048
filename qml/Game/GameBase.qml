@@ -40,26 +40,24 @@ Item {
     property int padding          : (width * 0.02);
     property Component design
     property Component animation  : Component { TileAnimation {} }
-    property Component loseDesign : Component { Lose {} }
+    property alias loseDesign: loseLoader.sourceComponent
 
-    property Item loseComponent;
+    Loader {
+        id: loseLoader
+        anchors.fill: parent
+        z: 1
+        active: !swipeArea.enabled
+    }
 
     signal lose
     signal restart
     signal save
 
-    onLose: {
-        loseComponent.bestTile = game.bestTile;
-        loseComponent.classicScore = game.classicScore;
-        loseComponent.moves = game.moves;
-        loseComponent.improvedScore = game.improvedScore;
-        loseComponent.visible = true;
+    onLose:
         swipeArea.enabled = false
-    }
 
     onRestart: {
-        loseComponent.visible = false;
-        swipeArea.enabled = true;
+        swipeArea.enabled = true
         for (var i in tiles) {
             var tile = tiles[i];
             if (tile !== undefined) {
@@ -128,9 +126,5 @@ Item {
                 }
             }
         }
-    }
-
-    Component.onCompleted: {
-        loseComponent = loseDesign.createObject(game);
     }
 }
