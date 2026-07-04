@@ -39,13 +39,15 @@ Item {
     property int padding: width * 0.02
     property Component design
     property Component animation: Component { TileAnimation {} }
+
+    property bool lost: !swipeArea.enabled
     property alias loseDesign: loseLoader.sourceComponent
 
     Loader {
         id: loseLoader
         anchors.fill: parent
         z: 1
-        active: !swipeArea.enabled
+        active: lost
     }
 
     function checkLost() {

@@ -37,6 +37,5 @@ GameBase {
     }
     swipeArea: swipeArea
 
-    HexaTileGrid { id: tileGrid }
-    tileGrid: tileGrid
+    tileGrid: HexaTileGrid { parent: game }
 }

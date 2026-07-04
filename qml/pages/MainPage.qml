@@ -5,8 +5,6 @@ import '../Game'
 import '../components'
 
 Page {
-    id: mainPage
-
     SilicaFlickable {
         width: parent.width
         anchors {
@@ -102,6 +100,10 @@ Page {
         sourceComponent: config.tileFormat == 1 ? hexaGameComponent : gameComponent
     }
 
+    property color backgroundColor: Theme.rgba(Theme.primaryColor, Theme.opacityLow/6)
+    property color invertedPrimaryColor: Theme.colorScheme == Theme.DarkOnLight ? Theme.lightPrimaryColor : Theme.darkPrimaryColor
+    property color itemColor: Theme.rgba(invertedPrimaryColor, Theme.opacityLow/2)
+
     Component {
         id: gameComponent
         Game {
@@ -109,7 +111,9 @@ Page {
                 fill: parent
                 margins: Theme.paddingLarge
             }
+            background.color: backgroundColor
             background.radius: Theme.paddingSmall
+            tileGrid.itemColor: itemColor
             design: Component { SailTileDesign {} }
             loseDesign: Component { Lose {} }
             size: config.size
@@ -124,6 +128,8 @@ Page {
                 fill: parent
                 margins: Theme.paddingLarge
             }
+            background.color: backgroundColor
+            tileGrid.itemColor: itemColor
             design: Component { SailHexaDesign {} }
             loseDesign: Component { Lose {} }
             size: config.size

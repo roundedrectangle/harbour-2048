@@ -19,8 +19,7 @@ GameBase {
         id: background
         anchors.fill: parent
         radius: width / 50
-        color: 'white'
-        opacity: 0.05
+        color: Qt.rgba(1, 1, 1, 0.05)
     }
 
     SwipeArea {
@@ -33,6 +32,5 @@ GameBase {
     }
     swipeArea: swipeArea
 
-    TileGrid { id: tileGrid }
-    tileGrid: tileGrid
+    tileGrid: TileGrid { parent: game }
 }

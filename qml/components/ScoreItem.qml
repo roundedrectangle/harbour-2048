@@ -8,11 +8,12 @@ Rectangle {
     width: parent.width / 2
     height: parent.height
 
-    color: Theme.rgba(Theme.highlightBackgroundColor, Theme.opacityLow)
+    color: Theme.rgba(Theme.overlayBackgroundColor, Theme.opacityHigh)
     radius: Theme.paddingSmall
 
     Column {
-        anchors.fill: parent
+        width: parent.width
+        anchors.verticalCenter: parent.verticalCenter
         spacing: Theme.paddingMedium
 
         Label {
